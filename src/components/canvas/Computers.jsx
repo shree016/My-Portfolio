@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
 import CanvasLoader from "../Loader";
@@ -31,6 +31,7 @@ const Computers = ({ isMobile }) => {
 
 const ComputersCanvas = () => {
   const [isMobile, setIsMobile] = useState(false);
+  const canvasRef = useRef();
 
   useEffect(() => {
     // Add a listener for changes to the screen size
@@ -40,7 +41,6 @@ const ComputersCanvas = () => {
     const handleMediaQueryChange = (event) => {
       setIsMobile(event.matches);
     };
-    // Add the callback function as a listener for changes to the media query
     mediaQuery.addEventListener("change", handleMediaQueryChange);
 
     // Remove the listener when the component is unmounted
@@ -53,22 +53,29 @@ const ComputersCanvas = () => {
   const handleContextLost = (event) => {
     event.preventDefault();
     console.log("WebGL context lost. Attempting to restore...");
-    // Optionally, you could display a message to the user or reload the scene
+    // Optional: Show a user-friendly message or attempt to reload the scene
   };
 
   const handleContextRestored = () => {
     console.log("WebGL context restored.");
-    // Optionally, you could reload resources or reset the scene if needed
+    // Optional: Reload the scene or reinitialize assets as necessary
   };
 
   return (
     <Canvas
+      ref={canvasRef}
       frameloop="demand"
       shadows
       camera={{ position: [20, 3, 5], fov: 25 }}
       gl={{ preserveDrawingBuffer: true }}
-      onContextLost={handleContextLost}   // Add context lost handler
-      onContextRestored={handleContextRestored}  // Add context restored handler
+      onCreated={({ gl }) => {
+        // Access the WebGLRenderer object
+        const renderer = gl.getContext();
+        
+        // Listen for WebGL context lost and restored events
+        renderer.canvas.addEventListener("webglcontextlost", handleContextLost);
+        renderer.canvas.addEventListener("webglcontextrestored", handleContextRestored);
+      }}
     >
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls
