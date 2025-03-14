@@ -49,12 +49,26 @@ const ComputersCanvas = () => {
     };
   }, []);
 
+  // Handle WebGL context loss and restoration
+  const handleContextLost = (event) => {
+    event.preventDefault();
+    console.log("WebGL context lost. Attempting to restore...");
+    // Optionally, you could display a message to the user or reload the scene
+  };
+
+  const handleContextRestored = () => {
+    console.log("WebGL context restored.");
+    // Optionally, you could reload resources or reset the scene if needed
+  };
+
   return (
     <Canvas
       frameloop="demand"
       shadows
       camera={{ position: [20, 3, 5], fov: 25 }}
       gl={{ preserveDrawingBuffer: true }}
+      onContextLost={handleContextLost}   // Add context lost handler
+      onContextRestored={handleContextRestored}  // Add context restored handler
     >
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls

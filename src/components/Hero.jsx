@@ -27,10 +27,11 @@ const Hero = () => {
         </div>
       </div>
 
+      {/* ComputersCanvas is likely rendering 3D content */}
       <ComputersCanvas />
 
       <div className="absolute xs:bottom-2 bottom-12 w-full flex justify-center items-center">
-        <a href="#about">
+        <a href="#about" aria-label="Scroll down to about section">
           <div className="w-[35px] h-[64px] rounded-3xl border-4 border-secondary flex justify-center items-start p-2">
             <motion.div
               animate={{ y: [0, 24, 0] }}
